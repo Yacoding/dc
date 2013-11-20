@@ -1,0 +1,62 @@
+.datatables-page {
+  margin-bottom: 25px;
+}
+
+.options-bar {
+	margin-bottom: 30px;
+}
+/*========================================*/
+.options-bar { margin: 10px 0 20px 0; }
+.options-bar .btn-group { padding-right: 8px; }
+.options-bar .input-group {	padding: 0; }
+.options-bar .display-notice { cursor: default; }
+.options-bar .display-notice, .options-bar .display-info {
+	margin-right: -4px;
+}
+.caret { border-top: 4px solid #fff; }
+
+#submit-sel-pro { margin-left: 12px; }
+#export-all { margin-left: 8px; }
+.dropdown-menu li:hover {
+	cursor: pointer;
+}
+.popover {
+	display: none;
+	top: -1px;
+	left: 183px;
+	font-family: "Microsoft Yahei";
+}
+.popover-content {
+	padding-bottom: 0px;
+}
+.popover-title {
+	font-size: 16px;
+	font-weight: bolder;
+}
+.second > li {
+	border-bottom: 1px dashed #ccc;
+}
+.second p {
+	margin-bottom: 0px;
+	font-weight: bolder;
+}
+.second p a {
+	color: #E4393C;
+}
+.third li {
+	display: inline-block;
+	padding: 0 10px;
+	margin: 5px 0;
+	border-left: 1px solid #ccc;
+}
+
+/*====================================*/
+
+.pager li { cursor: pointer; }
+.pager input { display: inline; width: 60px; height: 30px; }
+
+/*====================================*/
+
+#product-detail-content {
+	margin: 30px 10px 10px 10px;
+}

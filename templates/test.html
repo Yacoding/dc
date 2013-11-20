@@ -1,0 +1,21 @@
+<html>
+<header>
+	<title>{{ META_TITLE }}</title>
+</header>
+<body>
+	<div>
+		<form id="select-products" action="/radar/selectProducts" method="POST" target="_blank">
+			来源<input type="text" name="source" value="tmall" />
+			collextion<input type="text" name="collection" value="个人护理" />
+			目录<input type="text" name="category" value="个人护理" />
+			页数<input type="text" name="page" value="1"/>
+			排序<input type="text" name="sort" value="销量"/>
+			操作<input type="text" name="operation" value="SHOW_PRODUCTS" />
+			<input type="text" name="sel-attr" value="pro_sku" />
+			items<input type="text" name="items" value="" />
+			全部导出<input type="text" name="export_all" value="false" />
+			<input type="submit" value="提交" />
+		</form>
+	</div>
+</body>
+</html>
