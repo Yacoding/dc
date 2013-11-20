@@ -24,6 +24,7 @@ urlpatterns = patterns('dc.views',
 urlpatterns += patterns('scraper.views',
     url(r'^scraper/$', 'scraper_index'),
     url(r'^scraper/crawl/$', 'crawl'),
+    url(r'^scraper/category/$', 'update_category'),
 )
 
 

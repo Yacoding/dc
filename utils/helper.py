@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 ### Helper Methods ###
 
 def get_request_params(request):
@@ -19,3 +21,7 @@ def _params_utf8_encode(params):
 	for i in params:
 		params[i] = params[i].encode('utf8')
 	return params
+
+
+def to_json( obj ):
+	return json.dumps( obj, ensure_ascii=False )

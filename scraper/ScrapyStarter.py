@@ -5,7 +5,6 @@ from scrapy import log, signals
 from scrapy.utils.project import get_project_settings
 
 import os
-from exceptions import ValueError
 
 
 class ScrapyStarter( object ):
@@ -16,7 +15,7 @@ class ScrapyStarter( object ):
 
 	def create(self, spider_name, start_url=''):
 
-		if spider_name.upper() not in ['TM', 'JD']:
+		if spider_name.upper() not in ['TM', 'JD', 'TM_CAT']:
 			print '[Console]: No spider.'
 			return
 

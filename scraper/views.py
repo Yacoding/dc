@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext 
 
+import json
 from utils.helper import *
 
 from scraper.ScrapyStarter import ScrapyStarter
@@ -27,3 +28,22 @@ def crawl(request):
 	# scrapy.run()
 
 	return HttpResponse('finish')
+
+
+def update_category(request):
+
+	params = get_request_params(request)
+
+	source = params.get('source')
+
+	if not source:
+		return HttpResponse( to_json({ 'status': 'false', 'err': 'without source' }) )
+	elif source.upper() not in ['TM', ]:
+		return HttpResponse( to_json({ 'status': 'false', 'err': 'unknow source' }) )
+
+	if source.upper() == 'TM':
+		scrapy = ScrapyStarter()
+		scrapy.create( 'tm_cat' )
+		scrapy.run()
+
+	return HttpResponse( to_json({ 'status': 'success' }) )

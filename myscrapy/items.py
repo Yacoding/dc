@@ -24,3 +24,7 @@ class ProductItem(Item):
     tm_moonSellCount = Field()
     date		= Field()
     history		= Field()
+
+
+class TmCatItem(Item):
+    cat = Field()
