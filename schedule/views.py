@@ -5,6 +5,11 @@ from django.template import RequestContext
 
 from TestTimer import TestTimer
 
+def h():
+	print "hahaha"
+
+t = TestTimer(h, sleep=3)
+
 
 def schedule_index(request):
 
@@ -12,12 +17,13 @@ def schedule_index(request):
 
 
 def run(request):
-	t = TestTimer(h, sleep=3)
 	t.run()
 	return HttpResponse('finish')
 
 
-def h():
-	t = TestTimer()
+
+
+
+def stop(request):
 	t.stop()
-	print "hahaha"
+	return HttpResponse('finish')

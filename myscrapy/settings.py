@@ -17,7 +17,8 @@ ITEM_PIPELINES = [
 
 # COOKIES_ENABLED = True
 
-DOWNLOAD_DELAY = 0.25    # 250 ms of delay
+DOWNLOAD_DELAY = 0.01    # 10 ms of delay
+DOWNLOAD_TIMEOUT = 30
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'myscrapy (+http://www.yourdomain.com)'

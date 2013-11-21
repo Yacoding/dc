@@ -16,7 +16,7 @@ class MongoPipeline(object):
 	def process_item(self, item, spider):
 		# print dict(item)
 		conn = pymongo.Connection('127.0.0.1', 27017)
-		conn['test']['cat'].save(dict(item))
+		conn['test']['tm'].save(dict(item))
 		return item
 
 

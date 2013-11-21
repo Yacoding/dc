@@ -56,9 +56,12 @@ class TMSpider(CrawlSpider):
         item['name']    = self.get_product_name( sel )        
         item['img']     = sel.xpath("//ul[@id='J_UlThumb']/li")[0].xpath(".//a/img/@src").extract()[0]
         
-        # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
-        TShop_str = sel.re('TShop\.Setup\(((.|\n)+?)\);')[0]
-        TShop = eval( TShop_str, type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )        
+        try:
+            # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
+            TShop_str = sel.re('TShop\.Setup\(((.|\n)+?)\);')[0]
+            TShop = eval( TShop_str, type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )      
+        except SyntaxError:
+            return  
         
         item['itemId']  = TShop.get('itemDO').get('itemId', '')
         item['url']     = 'http://detail.tmall.com/item.htm?id=' + item['itemId']
