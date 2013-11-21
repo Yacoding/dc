@@ -26,9 +26,9 @@ class TMSpider(CrawlSpider):
     rules = (
 
         Rule(   SgmlLinkExtractor(  allow=(r'detail.tmall.com'),
-                                    restrict_xpaths=("//div[@id='J_ItemList']"),
+                                    restrict_xpaths=("//div[@id='J_ItemList']//p[@class='productTitle']"),
                                     unique=True), 
-                callback='parse_item' ),
+                callback='parse_item', ),
         
         Rule(   SgmlLinkExtractor(  allow=(r'list.tmall.com'),
                                     restrict_xpaths=("//a[@class='ui-page-s-next']"),
@@ -197,3 +197,11 @@ class TMSpider(CrawlSpider):
                 else:
                     # 没促销信息
                     return float(priceInfo[sku].get('price'))
+
+
+    def parse_url(self, response):
+        """ just for testing
+        """
+        sel = Selector(response)
+        title = sel.xpath('/html/head/title/text()').extract()[0]
+        open('file.txt', 'ab').write( '[Referer]: ' + response.request.headers.get('Referer', 'None') + '\n' + response.url + '\n')

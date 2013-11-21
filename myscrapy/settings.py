@@ -15,7 +15,9 @@ ITEM_PIPELINES = [
 	'myscrapy.pipelines.MongoPipeline',
 ]
 
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = True
+
+DOWNLOAD_DELAY = 0.25    # 250 ms of delay
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'myscrapy (+http://www.yourdomain.com)'
