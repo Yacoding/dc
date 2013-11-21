@@ -1,9 +1,10 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext 
 
 import json
+import pymongo
 from utils.helper import *
 
 from scraper.ScrapyStarter import ScrapyStarter
@@ -30,20 +31,48 @@ def crawl(request):
 	return HttpResponse('finish')
 
 
-def update_category(request):
+def category(request):
 
 	params = get_request_params(request)
 
 	source = params.get('source')
+	action = params.get('action', 'GET')
 
 	if not source:
-		return HttpResponse( to_json({ 'status': 'false', 'err': 'without source' }) )
+		return HttpResponse( to_json({ 'status': 'fail', 'err': 'without source' }) )
 	elif source.upper() not in ['TM', ]:
-		return HttpResponse( to_json({ 'status': 'false', 'err': 'unknow source' }) )
+		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow source' }) )
 
-	if source.upper() == 'TM':
-		scrapy = ScrapyStarter()
-		scrapy.create( 'tm_cat' )
-		scrapy.run()
+	# Update Category Action
+	if action.upper() == 'UPDATE':
 
-	return HttpResponse( to_json({ 'status': 'success' }) )
+		if source.upper() == 'TM':
+			scrapy = ScrapyStarter()
+			scrapy.create( 'tm_cat' )
+			scrapy.run()
+
+		elif source.upper() == 'JD':
+			pass
+
+		return HttpResponse( to_json({ 'status': 'success' }) )
+
+	# Get Category Action
+	elif action.upper() == 'GET':
+
+		if source.upper() == 'TM':
+			conn = pymongo.Connection('127.0.0.1', 27017)
+			result = conn['test']['cat'].find_one()
+			result = remove_id_attribute( result )
+			return HttpResponse( to_json({ 'status': 'success', 'content': result }) )
+
+		elif source.upper() == 'JD':
+			pass
+
+		return HttpResponse( to_json({ 'status': 'success' }) )
+
+	# Unknow Action
+	else:
+
+		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow action' }) )
+
+

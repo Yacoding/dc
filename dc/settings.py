@@ -3,7 +3,8 @@ import os
 
 # MongoEngine
 from mongoengine import connect
-connect('tmall')
+
+connect( "test", host="127.0.0.1", port=27017 )
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -138,6 +139,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'products',
+    'scraper',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

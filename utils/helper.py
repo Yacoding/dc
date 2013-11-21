@@ -25,3 +25,12 @@ def _params_utf8_encode(params):
 
 def to_json( obj ):
 	return json.dumps( obj, ensure_ascii=False )
+
+
+def remove_id_attribute(json_obj):
+	if isinstance( json_obj, list ):
+		[ _remove_id_attribute(item) for item in json_obj ]
+	else:
+		if json_obj["_id"]:
+			del( json_obj["_id"] )
+	return json_obj

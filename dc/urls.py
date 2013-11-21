@@ -5,6 +5,7 @@ from dc import settings
 # from django.contrib import admin
 # admin.autodiscover()
 
+
 urlpatterns = patterns('dc.views',
 	url(r'^$', 'index'),
     url(r'^time/$', 'current_datetime'),
@@ -24,7 +25,7 @@ urlpatterns = patterns('dc.views',
 urlpatterns += patterns('scraper.views',
     url(r'^scraper/$', 'scraper_index'),
     url(r'^scraper/crawl/$', 'crawl'),
-    url(r'^scraper/category/$', 'update_category'),
+    url(r'^scraper/category/$', 'category'),
 )
 
 
@@ -35,6 +36,14 @@ urlpatterns += patterns('products.views',
     url(r'^radar/selectProducts$', 'select_products'),
     url(r'^radar/getCategory$', 'get_category'),
     url(r'^radar/test/$', 'test'),
+)
+
+
+# schedule module's route configure
+urlpatterns += patterns('schedule.views',
+    url(r'^schedule/$', 'schedule_index'),
+    url(r'^schedule/run$', 'run'),
+    url(r'^schedule/stop$', 'stop'),
 )
 
 

@@ -10,6 +10,28 @@
 </head>
 <body>
 	<p>hello world</p>
+	<form action="/scraper/category/" method="GET">
+		<label for="source">目标：</label>
+		<select id="cat-source" name="source">
+			<option value="tm">Tmall</option>
+			<option value="jd">京东</option>
+		</select>
+		<label for="action">Action：</label>
+		<select id="cat-action" name="action">
+			<option value="get">GET</option>
+			<option value="update">UPDATE</option>
+		</select>
+	</form>
+
+	<button id="cat-btn" style="margin-top: 20px">走你 Go!</button>
+
+	<button id="submit-tm-task-btn">抓你 Go!</button>
+
+	<ul id="show" class="ztree"></ul>
+
+
+	<P>==========================================</P>
+
 	<form action="http://192.168.86.223:8000/push" method="POST">
 	<!-- <form action="http://127.0.0.1:8000/push" method="POST"> -->
 		URL: <input type="text" name="url" id="url" >
@@ -31,7 +53,6 @@
 	<input id="get-tmall-cat" type="button" value="输出tamll目录" />
 	<input id="submit-tmall-task" type="button" value="提任务" />
 	<input id="update-tmall-cat" type="button" value="更新MongoDB中的tmall目录" />
-	<ul id="show" class="ztree">
 		
 	</div>
 </body>
