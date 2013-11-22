@@ -27,7 +27,7 @@ class TMSpider(CrawlSpider):
 
         Rule(   SgmlLinkExtractor(  allow=(r'detail.tmall.com'),
                                     restrict_xpaths=("//div[@id='J_ItemList']//p[@class='productTitle']"),
-                                    unique=True), 
+                                    unique=True),
                 callback='parse_item', ),
         
         Rule(   SgmlLinkExtractor(  allow=(r'list.tmall.com'),
@@ -44,6 +44,9 @@ class TMSpider(CrawlSpider):
 
         if kwargs.get('start_url'):
             self.start_urls = [ kwargs.get('start_url') ]
+            # task = kwargs.get('start_url')
+            # self.cat_map = dict( ( t[1], t[0] ) for t in task )
+            # self.start_urls = [ t[1] for t in task ]
 
 
     def parse_item(self, response):
@@ -55,6 +58,8 @@ class TMSpider(CrawlSpider):
         item['source']  = 'tmall'       
         item['name']    = self.get_product_name( sel )        
         item['img']     = sel.xpath("//ul[@id='J_UlThumb']/li")[0].xpath(".//a/img/@src").extract()[0]
+
+        # item['category'] = self.get_category(response)
         
         try:
             # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
@@ -75,6 +80,21 @@ class TMSpider(CrawlSpider):
                         headers={'Referer': 'http://www.google.com.hk/'}, 
                         meta={'item': item, 'skuMap': skuMap}, 
                         callback=self.parse_initapi )
+
+
+    # def get_category(self, response):
+    #     referer = response.request.headers.get('Referer', 'None')
+    #     BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
+    #     # check referer contains list.tmall.com
+    #     if referer:
+    #         regex = re.compile('list.tmall.com')
+    #         if regex.search( referer ):
+    #             # get cat id
+    #             regex2 = re.compile('cat=(\d+)')
+    #             result = regex2.search( referer )
+    #             url = BASE_TM_LIST_URL + result.group(1)
+    #         return self.cat_map[url]
+    #     return ''
 
 
     def parse_initapi(self, response):

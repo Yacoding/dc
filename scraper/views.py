@@ -6,6 +6,7 @@ from django.template import RequestContext
 import json
 import pymongo
 from utils.helper import *
+import re
 
 from scraper.ScrapyStarter import ScrapyStarter
 
@@ -16,29 +17,36 @@ def scraper_index(request):
 
 
 def crawl(request):
-
-	params = get_request_params(request)
+	""" receive JSON data only
+	"""
+	params = get_JSON_request_params(request)
 
 	source = params.get('source')
-	start_url = params.get('start_url')
+	tasks = params.get('tasks')
+	
+	BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
 
-	BASE_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
-
-	# "http://list.jd.com/737-794-798-0-0-0-0-0-0-0-1-1-1-1-1-72-4137-33.html"
-	# start_url = "http://list.tmall.com/search_product.htm?cat=50916011"
-	# start_url = "http://list.tmall.com/search_product.htm?cat=50026415"
-
+	# check source
 	if not source:
 		return HttpResponse( to_json({ 'status': 'fail', 'err': 'without source' }) )
-	elif source.upper() not in ['TM', ]:
+	elif source.upper() not in ['TM', 'JD']:
 		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow source' }) )
-
-	if not start_url:
-		return HttpResponse( to_json({ 'status': 'fail', 'err': 'without start_url' }) )
+	
+	# deal with start_urls
+	start_urls = []
+	if source.upper() == 'TM':
+		regex = re.compile('cat=(\d+)')		
+		for t in tasks:
+			result = regex.search( t['start_url'] )
+			if result: 
+				t['start_url'] = BASE_TM_LIST_URL + result.group(1)
+				start_urls.append( (t['category'], t['start_url']) )
+	elif source.upper() == 'JD':
+		pass
 
 	scrapy = ScrapyStarter()
-	scrapy.create( source.upper(), start_url )
-	scrapy.run()
+	scrapy.create( source.upper(), start_urls )
+	# scrapy.run()
 
 	return HttpResponse('finish')
 

@@ -25,15 +25,16 @@ class JDSpider(CrawlSpider):
                         unique=True), 
                 callback='parse_item' ),
 
-    	Rule ( SgmlLinkExtractor(  allow=(r'list.jd.com'), 
-                        restrict_xpaths=('//div[@class="pagin pagin-m"]//a[@class="next"]'),
-                        unique=True), 
-                callback='test' ),
+    	# Rule ( SgmlLinkExtractor(  allow=(r'list.jd.com'), 
+     #                    restrict_xpaths=('//div[@class="pagin pagin-m"]//a[@class="next"]'),
+     #                    unique=True), 
+     #            callback='test' ),
 
     )
 
 
     def __init__(self, *args, **kwargs):
+        
         super(JDSpider, self).__init__(*args, **kwargs)
         if kwargs.get('start_url'):
             self.start_urls = [ kwargs.get('start_url') ]
@@ -45,7 +46,7 @@ class JDSpider(CrawlSpider):
     	item['itemId'] = response.url.split("/")[-1].split(".")[0]
     	item['name'] = sel.xpath('/html/head/title/text()').extract()[0]
         # print dict(item)
-        open('file.txt', 'ab').write('1 ' + response.url + '\n')
+        # open('file.txt', 'ab').write('1 ' + response.url + '\n')
         return item
 
 

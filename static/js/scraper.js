@@ -80,25 +80,50 @@ $(document).ready(function() {
 			var flag = $(this).find('span.chk').hasClass('checkbox_true_full');
 			if( flag ) {
 				var task = {};
-				task.category = [];
-				task.category.push( $(this).parent().siblings('a').attr('title') );
-				task.category.push( $(this).find('a').attr('title') );
-				task.url = $(this).find('a').attr('href');
-				task.source = 'tmall';
+				first = $(this).parent().siblings('a').attr('title');
+				second = $(this).find('a').attr('title')
+				task.category = first + '/' + second;
+				task.start_url = $(this).find('a').attr('href');
 				tasks.push( task );
 			}			
 		});
+		rto.source = 'tm';
 		rto.tasks = tasks;
 
 		$.ajax({
 			url : '/scraper/crawl/',
 			type: 'POST',
-			data: rto,
+			data: JSON.stringify(rto),
 			success: function(data){
 				console.log('submit success', data);
 			},
 			error: function(data){
 				console.log('submit error', data);
+			}
+		});
+	});
+
+
+	/* Submit Tasks of Tmall */
+	$(document).on('click', '#submit-single-url', function() {
+
+		var sendData = { 'tasks': [] };
+		task = {
+			category : '',
+			start_url : $('#start_url').val()
+		};
+		sendData.tasks.push( task );
+		sendData.source = $('#crawl-source').val();
+
+		$.ajax({
+			url : '/scraper/crawl/',
+			type: 'POST',
+			data: JSON.stringify(sendData),
+			success: function(data){
+				console.log(data);
+			},
+			error: function(data){
+				console.log(data);
 			}
 		});
 	});

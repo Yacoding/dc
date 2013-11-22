@@ -4,6 +4,11 @@ import json
 
 ### Helper Methods ###
 
+def get_JSON_request_params(request):
+	
+	return json.loads( request.raw_post_data )
+
+
 def get_request_params(request):
 	params = {}
 	if request.method == "GET":

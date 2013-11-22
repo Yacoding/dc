@@ -13,7 +13,7 @@ class ScrapyStarter( object ):
 		self.command = ''
 
 
-	def create(self, spider_name, start_url=''):
+	def create(self, spider_name, start_urls=[]):
 
 		if spider_name.upper() not in ['TM', 'JD', 'TM_CAT']:
 			print '[Console]: No spider.'
@@ -21,10 +21,23 @@ class ScrapyStarter( object ):
 
 		self.command = "scrapy crawl " + spider_name.lower() 
 
-		if start_url:
-			self.command += " -a start_url=" + start_url
+		if len(start_urls) > 0:
+			print start_urls
+			# self.command += " -a start_urls=" + start_urls
+			self.command += " -a start_urls=" + self.init_start_url(start_urls)
+			print self.command
 
 
 	def run(self):
 
 		os.system( self.command )
+
+
+	def init_start_url(self, start_urls):
+
+		result = ''
+
+		for i in start_urls:
+			result += i[0] + '____' + i[1] + '####'
+
+		return result

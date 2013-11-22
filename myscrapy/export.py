@@ -1,75 +1,60 @@
 # -*- coding: utf8 -*-
+import xlwt
+import sys
+from datetime import datetime
+import os
 
-class ExportExcel( object ):
-	"""docstring for ExportProducts"""
-	def __init__(self, products):
-		self.products = products
 
-	def action(self):
-		# Export products
-		content = self._walk_products( self.products )	
-		## http response	
-		rto = self._export( content )
-		# response = HttpResponse( rto, "application/vnd.ms-excel" )
-		# response['Content-Disposition'] = 'attachment; filename=%s' % 'products.xls'
-		# return response		
+class ExportExcelEveryItem( object ):
 
-	def _init_header(self, source):
-		"""Init Excel header for fixed column"""
-		if source == "tmall":
-			return [u'source', u'name', u'price', u'tm_moonSellCount', u'comment', u'url']
-		else:
-			return []
+	def __init__(self, file_name=datetime.now().strftime('%Y%m%d_%H-%M-%S')):
+		self.file = file_name
+		self.items = { 'def': [] }
+		# workbook instance
+		self.wb = xlwt.Workbook()
+		self.ws = {}
+		self.EXCEL_PATH = os.path.join(os.path.dirname(__file__), 'download')
 
-	def _walk_products(self, products):
-		"""Trival products"""
-		headerO = self._init_header( 'tmall' )
-		header = self._init_header( 'tmall' )
-		package = []
-		for product in products:
-			tmp = {}
-			# Get fixed items
-			for item in headerO:
-				tmp[item] = product[item]
-			# Get unfixed items
-			for it in product["attr"]:
-				if it not in header:
-					header.append( it )
-				tmp[it] = product["attr"][it]
-			# Add to package
-			package.append( tmp )
-		return self._merge_products( header, package )		
 
-	def _merge_products(self, header, package):
-		"""Merge header and products into array"""
-		content = []
-		content.append( header )
-		for product in package:
-			tmp = []
-			for i in header:
-				if i in product:
-					tmp.append( product[i] )
-				else: tmp.append( '' )
-			content.append( tmp )
-		return content
+	def add_item(self, item, item_collection='def'):
 
-	def _export(self, content):
-		"""Export content array to Excel file"""
-		wb = xlwt.Workbook()
-		ws = wb.add_sheet('Products Sheet')
-		for row in range( 0, len(content) ):
-			for col in range( 0, len(content[row]) ):
-				ws.write(row, col, content[row][col])
-		wb.save( self._excel_path() )
-		return self._get_file_content()
+		if not self.is_items_collection_exist( item_collection ):
+			self.create_item_collection( item_collection )
+			
+		self.items[item_collection].append( item )
 
-	def _get_file_content(self):
-		"""Get binary string of excel file"""
-		excel_file = open(self._excel_path(), "rb")
-		file_content = excel_file.read()
-		excel_file.close()
-		return file_content
 
-	def _excel_path(self):
-		"""Path to excel file"""
-		return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'products.xls')
+	def is_items_collection_exist(self, collection):
+
+		return True if collection in self.items else False
+
+
+	def create_item_collection(self, collection):
+
+		self.items[collection] = []
+
+
+	def export(self, limit=sys.maxint):
+
+		# items collection loop
+		for key in self.items.keys():
+
+			self.ws[key] = self.wb.add_sheet( key )
+
+			header = self.get_header()
+			self.items[key].insert( 0, header )
+
+			# items loop
+			for row in range(0, min(limit, len(self.items[key]))):
+				# column loop
+				for col in range(0, len(self.items[key][row])):
+					self.ws[key].write( row, col, self.items[key][row][col] )
+
+		# save file
+		path = os.path.join( self.EXCEL_PATH, self.file + '.xls' )
+		self.wb.save( path )
+
+
+	def get_header(self):
+
+		return [u'商品ID', u'商品名', u'品牌', u'目录', u'链接', u'价格', u'评论数', u'月销量']

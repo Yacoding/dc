@@ -12,7 +12,9 @@ SPIDER_MODULES = ['myscrapy.spiders']
 NEWSPIDER_MODULE = 'myscrapy.spiders'
 
 ITEM_PIPELINES = [
-	'myscrapy.pipelines.MongoPipeline',
+	# 'myscrapy.pipelines.MongoPipeline',
+	# 'myscrapy.pipelines.TutorialPipeline',
+	'myscrapy.pipelines.ExcelPipeline',
 ]
 
 # COOKIES_ENABLED = True

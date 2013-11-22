@@ -31,14 +31,14 @@
 
 	<form action="/scraper/crawl/" method="GET">
 		<label for="source">目标：</label>
-		<select id="cat-source" name="source">
+		<select id="crawl-source" name="source">
 			<option value="tm">Tmall</option>
 			<option value="jd">京东</option>
 		</select>
 		<label for="start_url">URL：</label>
-		<input type="text" name="start_url" />
-		<button>提交 Go!</button>
+		<input id="start_url" type="text" name="start_url" />
 	</form>
+	<button id="submit-single-url">提交 Go!</button>
 
 
 	<P>==========================================</P>
