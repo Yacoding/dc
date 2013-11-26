@@ -1,70 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-	<script type="text/javascript" src="/js/jquery/jquery-1.9.1.min.js"></script>
-	<script type="text/javascript" src="/js/scraper.js"></script>
-	<script type="text/javascript" src="/js/jquery/jquery.ztree.core-3.5.min.js"></script>
-	<script type="text/javascript" src="/js/jquery/jquery.ztree.excheck-3.5.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="/css/zTreeStyle.css">
+{% include "component/header.html" %}
+
+	<!-- this page specific styles -->
+	<link href="/js/jquery/jquery.dataTables.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-	<p>hello world</p>
-	<form action="/scraper/category/" method="GET">
-		<label for="source">目标：</label>
-		<select id="cat-source" name="source">
-			<option value="tm">Tmall</option>
-			<option value="jd">京东</option>
-		</select>
-		<label for="action">Action：</label>
-		<select id="cat-action" name="action">
-			<option value="get">GET</option>
-			<option value="update">UPDATE</option>
-		</select>
-	</form>
 
-	<button id="cat-btn" style="margin-top: 20px">走你 Go!</button>
+{% include "component/nav.html" %}
+{% include "component/sidebar.html" %}
 
-	<button id="submit-tm-task-btn">抓你 Go!</button>
+	<!-- main content -->
+    <div class="content">
+        
+        <div id="pad-wrapper" class="col-md-6">
 
-	<ul id="show" class="ztree"></ul>
+	        <div id="single-scraper-panel" class="panel panel-primary">
+	        	<div class="panel-heading">网页爬虫</div>
+				<div class="panel-body">
+					<div class="alert alert-warning alert-dismissable">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+						<strong>注意! </strong> 页面抓取需要一定时间，提交表带后请耐心等待，服务器处理完成后将提供Excel文件下载
+					</div>
 
-	<form action="/scraper/crawl/" method="GET">
-		<label for="source">目标：</label>
-		<select id="crawl-source" name="source">
-			<option value="tm">Tmall</option>
-			<option value="jd">京东</option>
-		</select>
-		<label for="start_url">URL：</label>
-		<input id="start_url" type="text" name="start_url" />
-	</form>
-	<button id="submit-single-url">提交 Go!</button>
+					<div class="form-group has-warning">
+						<label class="control-label" for="source">来源</label>
+						<select id="single-scraper-source" class="form-control" name="source">
+							<option value="tm">天猫</option>
+							<option value="jd">京东</option>
+						</select>
+					</div>
+					<div class="form-group has-warning">
+						<label class="control-label" for="start_url">链接地址</label>
+						<input type="text" class="form-control" id="single-scraper-start-url">
+					</div>
 
+					<button id="single-scraper-submit" type="button" class="btn btn-primary">抓你 Go!</button>
+				</div>
+	        </div>
 
-	<P>==========================================</P>
+        </div>
+    </div>
+    <!-- end main content -->
 
-	<form action="http://192.168.86.223:8000/push" method="POST">
-	<!-- <form action="http://127.0.0.1:8000/push" method="POST"> -->
-		URL: <input type="text" name="url" id="url" >
-		<select id="handler" name="handler" id="handler">
-		</select>
-	</br>
-		
-	</form>
-
-	<div id="cat" >
-		<button id="cat-jd" data="jingdong">更新Jingdong目录</button>
-	</div>
-
-	<style type="text/css">
-		#get-tmall-cat {
-			margin-top: 50px;
-		}
-	</style>
-	<input id="get-tmall-cat" type="button" value="输出tamll目录" />
-	<input id="submit-tmall-task" type="button" value="提任务" />
-	<input id="update-tmall-cat" type="button" value="更新MongoDB中的tmall目录" />
-		
-	</div>
+{% include "component/footer.html" %}
+	<!-- this page specific javascripts -->
+	<script type="text/javascript" src="/js/scraper-index.js"></script>
 </body>
 </html>

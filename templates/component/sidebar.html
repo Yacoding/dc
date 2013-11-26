@@ -3,18 +3,38 @@
         <ul id="dashboard-menu">
             <li>                
                 <a href="/">
-                    <i class="icon-home"></i>
-                    <span>Home</span>
-                </a>
-            </li>            
-            <li>
-                <a href="/radar">
+                {% ifequal MODULE "dc" %}
                     <div class="pointer">
                         <div class="arrow"></div>
                         <div class="arrow_border"></div>
                     </div>
+                {% endifequal %}
+                    <i class="icon-home"></i>
+                    <span>首页</span>
+                </a>
+            </li>  
+            <li>
+                <a href="/scraper">
+                {% ifequal MODULE "scraper" %}
+                    <div class="pointer">
+                        <div class="arrow"></div>
+                        <div class="arrow_border"></div>
+                    </div>
+                {% endifequal %}
+                    <i class="icon-cogs"></i>
+                    <span>爬虫</span>
+                </a>
+            </li>           
+            <li>
+                <a href="/radar">
+                {% ifequal MODULE "radar" %}
+                    <div class="pointer">
+                        <div class="arrow"></div>
+                        <div class="arrow_border"></div>
+                    </div>
+                {% endifequal %}
                     <i class="icon-signal"></i>
-                    <span>Products</span>
+                    <span>商品</span>
                 </a>
             </li>
 <!--             <li>
@@ -27,13 +47,7 @@
                     <li><a href="#">Custom tables</a></li>
                     <li><a href="#" >DataTables</a></li>
                 </ul>
-            </li>            
-            <li>
-                <a href="#">
-                    <i class="icon-signal"></i>
-                    <span>Charts</span>
-                </a>
-            </li> -->
+            </li>   -->         
         </ul>
     </div>
     <!-- end sidebar -->

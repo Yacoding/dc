@@ -4,15 +4,20 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 import datetime
+
  
 def index(request):
-	return render_to_response('index.html', context_instance=RequestContext(request)) 
+    META_TITLE = "数据中心"
+    MODULE = "radar"
+    return render_to_response('main.html', locals()) 
+
 
 def current_datetime(request):
     current_date = datetime.datetime.now()
     # return render_to_response('current_date.html', {'current_date': current_date})
     # Using locals() All vars are assigned to template
     return render_to_response('radar_index.html', locals())
+
 
 def hours_ahead(request, offset):
     try:

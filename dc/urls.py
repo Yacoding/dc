@@ -24,8 +24,10 @@ urlpatterns = patterns('dc.views',
 # scrawpy module's route configure
 urlpatterns += patterns('scraper.views',
     url(r'^scraper/$', 'scraper_index'),
+    url(r'^scraper/admin/$', 'scraper_admin'),
     url(r'^scraper/crawl/$', 'crawl'),
     url(r'^scraper/category/$', 'category'),
+    url(r'^scraper/download/$', 'get_excel'),
 )
 
 

@@ -21,6 +21,7 @@ def test(request):
 def radar_index(request):
 	"""Mian page of product radar"""
 	META_TITLE = "商品雷达"
+	MODULE = "radar"
 	return render_to_response('radar_index.html', locals())
 
 

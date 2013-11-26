@@ -82,7 +82,7 @@ $(document).ready(function() {
 				var task = {};
 				first = $(this).parent().siblings('a').attr('title');
 				second = $(this).find('a').attr('title')
-				task.category = first + '/' + second;
+				task.category = first + '|' + second;
 				task.start_url = $(this).find('a').attr('href');
 				tasks.push( task );
 			}			

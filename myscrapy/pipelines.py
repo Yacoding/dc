@@ -37,12 +37,13 @@ class ExcelPipeline(object):
 		pass
 
 	def open_spider(self, spider):
-		now = datetime.now().strftime('%Y%m%d_%H-%M-%S')
-		self.excel = ExportExcelEveryItem( spider.name + now )
+		file_name = spider.export_file_name if spider.export_file_name else spider.name + datetime.now().strftime('%Y%m%d_%H-%M-%S')
+		self.excel = ExportExcelEveryItem( file_name )
 
 	def process_item(self, item, spider):
-		listitem = self.get_listform_item( item )
-		self.excel.add_item( listitem )
+		# listitem = self.get_listform_item( item )
+		# self.excel.add_item( listitem )
+		self.excel.add_item( item )
 		return item
 
 	def close_spider(self, spider):
@@ -64,24 +65,21 @@ class ExcelPipeline(object):
 			if item.get('source') == 'tmall':
 				rto.append( item.get('tm_moonSellCount', ''))
 
-			if 'relateSKU' in item:
-				for sku in item['relateSKU'].keys():
-					price = item['relateSKU'][sku].get('price', 0)
-					promotionList = item['relateSKU'][sku].get('promotionList', None)
-					if type(promotionList) == list and len(promotionList) > 0:
-						min_price = sys.maxint
-						for i in range( len(promotionList) ):
-							if promotionList[i].get('price') and float(promotionList[i].get('price')) < min_price:
-								min_price = float(promotionList[i].get('price'))
-						price = min_price
-					rto.append( sku + '￥' + str(price) )
+			# Information about other SKU
+			# if 'relateSKU' in item:
+			# 	for sku in item['relateSKU'].keys():
+			# 		price = item['relateSKU'][sku].get('price', 0)
+			# 		promotionList = item['relateSKU'][sku].get('promotionList', None)
+			# 		if type(promotionList) == list and len(promotionList) > 0:
+			# 			min_price = sys.maxint
+			# 			for i in range( len(promotionList) ):
+			# 				if promotionList[i].get('price') and float(promotionList[i].get('price')) < min_price:
+			# 					min_price = float(promotionList[i].get('price'))
+			# 			price = min_price
+			# 		rto.append( sku + '￥' + str(price) )
 
 			for i in item.get('attr'):
 				rto.append( i + ':' + item['attr'][i] )
-
-		# for i in rto:
-		# 	if i.__class__ == unicode:
-		# 		i = i.encode('utf-8')
 
 		return rto
 				

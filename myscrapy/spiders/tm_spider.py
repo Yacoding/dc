@@ -9,7 +9,9 @@ from myscrapy.items import ProductItem
 
 import json
 import re
-from datetime import date
+from datetime import date, datetime
+
+from urllib import unquote
 
 import sys
 reload(sys)
@@ -22,6 +24,7 @@ class TMSpider(CrawlSpider):
     allowed_domains = ["tmall.com", "taobao.com"]
     start_urls = []
 
+    cat_map = {}
 
     rules = (
 
@@ -42,11 +45,25 @@ class TMSpider(CrawlSpider):
 
         super(TMSpider, self).__init__(*args, **kwargs)
 
-        if kwargs.get('start_url'):
-            self.start_urls = [ kwargs.get('start_url') ]
-            # task = kwargs.get('start_url')
-            # self.cat_map = dict( ( t[1], t[0] ) for t in task )
-            # self.start_urls = [ t[1] for t in task ]
+        self.action_type = kwargs.get('action_type', 'DEF_CALL')
+
+        if self.action_type == 'BUSINESS_CALL':
+            self.export_file_name = kwargs.get('export_file_name')
+
+        if kwargs.get('start_urls'):
+            self.start_urls = self.explain_urls( kwargs.get('start_urls') )
+            # self.start_urls = [ kwargs.get('start_urls') ]
+
+
+    def explain_urls(self, text):
+        # remove header '####'
+        text = text[4:]
+        rto = []
+        for group in text.split('####'):
+            t = group.split('____')
+            self.cat_map[t[1]] = unquote( t[0] ).decode('utf8')
+            rto.append( t[1] )
+        return rto
 
 
     def parse_item(self, response):
@@ -59,7 +76,7 @@ class TMSpider(CrawlSpider):
         item['name']    = self.get_product_name( sel )        
         item['img']     = sel.xpath("//ul[@id='J_UlThumb']/li")[0].xpath(".//a/img/@src").extract()[0]
 
-        # item['category'] = self.get_category(response)
+        item['category'] = self.get_category(response)
         
         try:
             # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
@@ -82,19 +99,19 @@ class TMSpider(CrawlSpider):
                         callback=self.parse_initapi )
 
 
-    # def get_category(self, response):
-    #     referer = response.request.headers.get('Referer', 'None')
-    #     BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
-    #     # check referer contains list.tmall.com
-    #     if referer:
-    #         regex = re.compile('list.tmall.com')
-    #         if regex.search( referer ):
-    #             # get cat id
-    #             regex2 = re.compile('cat=(\d+)')
-    #             result = regex2.search( referer )
-    #             url = BASE_TM_LIST_URL + result.group(1)
-    #         return self.cat_map[url]
-    #     return ''
+    def get_category(self, response):
+        referer = response.request.headers.get('Referer', 'None')
+        BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
+        # check referer contains list.tmall.com
+        if referer:
+            regex = re.compile('list.tmall.com')
+            if regex.search( referer ):
+                # get cat id
+                regex2 = re.compile('cat=(\d+)')
+                result = regex2.search( referer )
+                url = BASE_TM_LIST_URL + result.group(1)
+            return self.cat_map.get(url, '')
+        return ''
 
 
     def parse_initapi(self, response):
@@ -103,16 +120,19 @@ class TMSpider(CrawlSpider):
         item = response.meta['item']
         skuMap = response.meta['skuMap']
         item['relateSKU'] = {}
-        initObj = eval( response.body.strip().decode('gbk'), type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )
-        priceInfo = initObj.get('defaultModel').get('itemPriceResultDO').get('priceInfo')
-        for sku in skuMap.keys():
-            item['relateSKU'][skuMap[sku]] = priceInfo[sku]
-        item['price'] = self.get_default_price(priceInfo)
-        item['tm_moonSellCount'] = initObj.get('defaultModel').get('sellCountDO').get('sellCount', 0)
-
-        yield Request( 'http://dsr.rate.tmall.com/list_dsr_info.htm?itemId=' + item['itemId'],
-                        meta={'item': item},
-                        callback=self.parse_comment )
+        try:
+            initObj = eval( response.body.strip().decode('gbk'), type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )
+            priceInfo = initObj.get('defaultModel').get('itemPriceResultDO').get('priceInfo')
+            for sku in skuMap.keys():
+                item['relateSKU'][skuMap[sku]] = priceInfo[sku]
+            item['price'] = self.get_default_price(priceInfo)
+            item['tm_moonSellCount'] = initObj.get('defaultModel').get('sellCountDO').get('sellCount', 0)
+        except:
+            print response.body
+        finally:
+            yield Request( 'http://dsr.rate.tmall.com/list_dsr_info.htm?itemId=' + item['itemId'],
+                            meta={'item': item},
+                            callback=self.parse_comment )
 
 
     def parse_comment(self, response):

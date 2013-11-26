@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext 
 
+import os
 import json
 import pymongo
 from utils.helper import *
@@ -12,8 +13,14 @@ from scraper.ScrapyStarter import ScrapyStarter
 
 
 def scraper_index(request):
-	META_TITLE = "Scraper Module"
+	META_TITLE = "网页爬虫"
+	MODULE = "scraper"
 	return render_to_response('scraper_index.html', locals())
+
+
+def scraper_admin(request):
+	META_TITLE = "Scraper Module Admin"
+	return render_to_response('scraper_admin.html', locals())
 
 
 def crawl(request):
@@ -23,6 +30,7 @@ def crawl(request):
 
 	source = params.get('source')
 	tasks = params.get('tasks')
+	action_type = params.get('type', 'DEF_CALL')
 	
 	BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
 
@@ -31,6 +39,8 @@ def crawl(request):
 		return HttpResponse( to_json({ 'status': 'fail', 'err': 'without source' }) )
 	elif source.upper() not in ['TM', 'JD']:
 		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow source' }) )
+	elif action_type.upper() not in ['DEF_CALL', 'BUSINESS_CALL']:
+		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow action_type' }) )
 	
 	# deal with start_urls
 	start_urls = []
@@ -45,10 +55,20 @@ def crawl(request):
 		pass
 
 	scrapy = ScrapyStarter()
-	scrapy.create( source.upper(), start_urls )
-	# scrapy.run()
+	scrapy.create( source.upper(), action_type=action_type, start_urls=start_urls )
+	scrapy.run()
 
-	return HttpResponse('finish')
+	if action_type.upper() == 'DEF_CALL':
+		return HttpResponse('finish')
+	elif action_type.upper() == 'BUSINESS_CALL':
+		export_file_name = scrapy.get_export_file_name()
+		# export_file_name, export_file_content = scrapy.get_file_name_and_content()
+		# if export_file_name:
+		# 	response = HttpResponse( export_file_content, "application/vnd.ms-excel" )
+		# 	response['Content-Disposition'] = 'attachment; filename=%s' % 'products.xls'
+		# 	return response
+		# else:
+		return HttpResponse( to_json({ 'status': 'success', 'content': export_file_name }) )
 
 
 def category(request):
@@ -96,3 +116,20 @@ def category(request):
 		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow action' }) )
 
 
+
+def get_excel(request):
+
+	params = get_request_params(request)
+
+	file_name = params.get('file_name')
+	print file_name
+	print os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download')
+	file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download', file_name )
+
+	excel_file = open(file_path, "rb")
+	file_content = excel_file.read()
+	excel_file.close()
+
+	response = HttpResponse( file_content, "application/vnd.ms-excel" )
+	response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+	return response
