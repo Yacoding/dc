@@ -109,8 +109,9 @@ class TMSpider(CrawlSpider):
                 # get cat id
                 regex2 = re.compile('cat=(\d+)')
                 result = regex2.search( referer )
-                url = BASE_TM_LIST_URL + result.group(1)
-            return self.cat_map.get(url, '')
+                if result:
+                    url = BASE_TM_LIST_URL + result.group(1)
+                    return self.cat_map.get(url, '')
         return ''
 
 
@@ -128,8 +129,8 @@ class TMSpider(CrawlSpider):
             item['price'] = self.get_default_price(priceInfo)
             item['tm_moonSellCount'] = initObj.get('defaultModel').get('sellCountDO').get('sellCount', 0)
         except:
-            print response.body
-        finally:
+            yield item
+        else:
             yield Request( 'http://dsr.rate.tmall.com/list_dsr_info.htm?itemId=' + item['itemId'],
                             meta={'item': item},
                             callback=self.parse_comment )
@@ -151,8 +152,10 @@ class TMSpider(CrawlSpider):
 
         if len(name_node.xpath('./a')) > 0:
             return name_node.xpath('./a/text()').extract()[0]
-        else:
+        elif len(name_node.xpath('./a')) == 0:
             return name_node.xpath('./text()').extract()[0]
+        else:
+            return ''
 
 
     def get_attr_and_brand(self, sel):

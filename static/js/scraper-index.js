@@ -31,6 +31,8 @@ $(document).ready(function() {
 				addExcelDownloadForm( file_name );
 
 				self.html('抓取完成');
+
+				alert( '让您久等，终于抓完了！' );
 			},
 			error: function(data){
 				console.log(data);

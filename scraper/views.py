@@ -32,7 +32,7 @@ def crawl(request):
 	tasks = params.get('tasks')
 	action_type = params.get('type', 'DEF_CALL')
 	
-	BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?cat="
+	BASE_TM_LIST_URL = "http://list.tmall.com/search_product.htm?"
 
 	# check source
 	if not source:
@@ -45,12 +45,35 @@ def crawl(request):
 	# deal with start_urls
 	start_urls = []
 	if source.upper() == 'TM':
-		regex = re.compile('cat=(\d+)')		
+		regexQ = re.compile('[\?&]q=([^&]+)')
+		regex = re.compile('cat=(\d+)')	
 		for t in tasks:
-			result = regex.search( t['start_url'] )
-			if result: 
-				t['start_url'] = BASE_TM_LIST_URL + result.group(1)
-				start_urls.append( (t['category'], t['start_url']) )
+			resultQ = regexQ.search( t['start_url'] )
+			# has q attribute
+			if resultQ:
+				t['start_url'] = BASE_TM_LIST_URL + 'q=' + resultQ.group(1)
+				start_urls.append( ('', t['start_url']) )
+			# without q attribute
+			else:
+				result = regex.search( t['start_url'] )
+				if result:
+					t['start_url'] = BASE_TM_LIST_URL + 'cat=' + result.group(1)
+					start_urls.append( (t['category'], t['start_url']) )
+
+		# regex = re.compile('cat=(\d+)')		
+		# for t in tasks:
+		# 	result = regex.search( t['start_url'] )
+		# 	# has cat attribute
+		# 	if result: 
+		# 		t['start_url'] = BASE_TM_LIST_URL + 'cat=' + result.group(1)
+		# 		start_urls.append( (t['category'], t['start_url']) )
+		# 	# without cat attribute
+		# 	else:
+		# 		regexQ = re.compile('\?q=([^&]+)')
+		# 		resultQ = regexQ.search( t['start_url'] )
+		# 		if resultQ:
+		# 			t['start_url'] = BASE_TM_LIST_URL + 'q=' + resultQ.group(1)
+		# 			start_urls.append( ('', t['start_url']) )
 	elif source.upper() == 'JD':
 		pass
 

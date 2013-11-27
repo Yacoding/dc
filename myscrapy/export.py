@@ -41,21 +41,15 @@ class ExportExcelEveryItem( object ):
 
 			self.ws[key] = self.wb.add_sheet( key )
 
-			queue = self.walk_products( self.items[key] )
+			try:
+				queue = self.walk_products( self.items[key] )
+			except:
+				queue = []
 
 			for row in range(0, min(limit, len(queue))):
 				# column loop
 				for col in range(0, len(queue[row])):
 					self.ws[key].write( row, col, queue[row][col] )
-
-			# header = self.get_header()
-			# self.items[key].insert( 0, header )
-
-			# items loop
-			# for row in range(0, min(limit, len(self.items[key]))):
-			# 	# column loop
-			# 	for col in range(0, len(self.items[key][row])):
-			# 		self.ws[key].write( row, col, self.items[key][row][col] )
 
 		# save file
 		path = os.path.join( self.EXCEL_PATH, self.file + '.xls' )
@@ -71,13 +65,14 @@ class ExportExcelEveryItem( object ):
 			tmp = {}
 			# Get fixed items
 			for item in header_map:
-				tmp[ header_map[item] ] = product[item]
+				tmp[ header_map[item] ] = product[item] if item in product else ''
 			# Get unfixed items
 			for it in product["attr"]:
 				if it not in header:
 					header.append( it )
 				tmp[it] = product["attr"][it]
-			# Add to package
+			# Get relateSKU
+			tmp['relateSKU'] = product.get('relateSKU', None)
 			package.append( tmp )
 		return self._merge_products( header, package )
 
@@ -88,10 +83,23 @@ class ExportExcelEveryItem( object ):
 		content.append( header )
 		for product in package:
 			tmp = []
+			# merge fixed and attribute header
 			for i in header:
 				if i in product:
 					tmp.append( product[i] )
 				else: tmp.append( '' )
+			# merge relateSKU info
+			if 'relateSKU' in product:
+				for sku in product['relateSKU'].keys():
+					price = product['relateSKU'][sku].get('price', 0)
+					promotionList = product['relateSKU'][sku].get('promotionList', None)
+					if type(promotionList) == list and len(promotionList) > 0:
+						min_price = sys.maxint
+						for i in range( len(promotionList) ):
+							if promotionList[i].get('price') and float(promotionList[i].get('price')) < min_price:
+								min_price = float(promotionList[i].get('price'))
+						price = min_price
+					tmp.append( sku + '￥' + str(price) )
 			content.append( tmp )
 		return content	
 
