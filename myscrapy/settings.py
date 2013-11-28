@@ -16,7 +16,7 @@ CONCURRENT_ITEMS = 500
 ITEM_PIPELINES = [
 	# 'myscrapy.pipelines.MongoPipeline',
 	# 'myscrapy.pipelines.TutorialPipeline',
-	'myscrapy.pipelines.ExcelPipeline',
+	# 'myscrapy.pipelines.ExcelPipeline',
 ]
 
 # COOKIES_ENABLED = True

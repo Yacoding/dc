@@ -8,6 +8,8 @@ import json
 import pymongo
 from utils.helper import *
 import re
+import xlrd
+from datetime import datetime
 
 from scraper.ScrapyStarter import ScrapyStarter
 
@@ -60,20 +62,6 @@ def crawl(request):
 					t['start_url'] = BASE_TM_LIST_URL + 'cat=' + result.group(1)
 					start_urls.append( (t['category'], t['start_url']) )
 
-		# regex = re.compile('cat=(\d+)')		
-		# for t in tasks:
-		# 	result = regex.search( t['start_url'] )
-		# 	# has cat attribute
-		# 	if result: 
-		# 		t['start_url'] = BASE_TM_LIST_URL + 'cat=' + result.group(1)
-		# 		start_urls.append( (t['category'], t['start_url']) )
-		# 	# without cat attribute
-		# 	else:
-		# 		regexQ = re.compile('\?q=([^&]+)')
-		# 		resultQ = regexQ.search( t['start_url'] )
-		# 		if resultQ:
-		# 			t['start_url'] = BASE_TM_LIST_URL + 'q=' + resultQ.group(1)
-		# 			start_urls.append( ('', t['start_url']) )
 	elif source.upper() == 'JD':
 		pass
 
@@ -85,12 +73,6 @@ def crawl(request):
 		return HttpResponse('finish')
 	elif action_type.upper() == 'BUSINESS_CALL':
 		export_file_name = scrapy.get_export_file_name()
-		# export_file_name, export_file_content = scrapy.get_file_name_and_content()
-		# if export_file_name:
-		# 	response = HttpResponse( export_file_content, "application/vnd.ms-excel" )
-		# 	response['Content-Disposition'] = 'attachment; filename=%s' % 'products.xls'
-		# 	return response
-		# else:
 		return HttpResponse( to_json({ 'status': 'success', 'content': export_file_name }) )
 
 
@@ -145,8 +127,6 @@ def get_excel(request):
 	params = get_request_params(request)
 
 	file_name = params.get('file_name')
-	print file_name
-	print os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download')
 	file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download', file_name )
 
 	excel_file = open(file_path, "rb")
@@ -156,3 +136,39 @@ def get_excel(request):
 	response = HttpResponse( file_content, "application/vnd.ms-excel" )
 	response['Content-Disposition'] = 'attachment; filename=%s' % file_name
 	return response
+
+
+
+def monitor(request):
+
+	if request.method == "GET":
+		META_TITLE = "商品雷达"
+		MODULE = "monitor"
+		return render_to_response('monitor_index.html', locals())
+
+	elif request.method == "POST":
+		template = request.FILES['monitor-template']
+		# save template file
+		now = datetime.now().strftime('%Y%m%d_%H-%M-%S')
+		UPLOAD_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'upload')
+		xls_name = os.path.join(UPLOAD_PATH, now+template.name)
+		with open( xls_name, 'wb+' ) as xls:
+			xls.write( template.read() )
+		# handle  template file
+		start_urls = explainTemplate( xls_name )
+
+		scrapy = ScrapyStarter()
+		scrapy.create( 'MonitorSpider', action_type='MONITOR_CALL', start_urls=start_urls )
+		scrapy.run()
+
+		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow action' }) )
+
+
+def explainTemplate( xls_name ):
+	wb = xlrd.open_workbook( xls_name )
+	table = wb.sheet_by_index(0)
+	data = []
+	for i in range(table.nrows):
+		data.append( table.row_values(i) )
+	os.remove( xls_name )
+	return data

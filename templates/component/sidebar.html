@@ -9,7 +9,7 @@
                         <div class="arrow_border"></div>
                     </div>
                 {% endifequal %}
-                    <i class="icon-home"></i>
+                    <i class="fa fa-home"></i>
                     <span>首页</span>
                 </a>
             </li>  
@@ -21,10 +21,22 @@
                         <div class="arrow_border"></div>
                     </div>
                 {% endifequal %}
-                    <i class="icon-cogs"></i>
+                    <i class="fa fa-cogs"></i>
                     <span>爬虫</span>
                 </a>
-            </li>           
+            </li>  
+            <li>
+                <a href="/scraper/monitor">
+                {% ifequal MODULE "monitor" %}
+                    <div class="pointer">
+                        <div class="arrow"></div>
+                        <div class="arrow_border"></div>
+                    </div>
+                {% endifequal %}
+                    <i class="fa fa-crosshairs"></i>
+                    <span>监控</span>
+                </a>
+            </li>          
             <li>
                 <a href="/radar">
                 {% ifequal MODULE "radar" %}
@@ -33,7 +45,7 @@
                         <div class="arrow_border"></div>
                     </div>
                 {% endifequal %}
-                    <i class="icon-signal"></i>
+                    <i class="fa fa-signal"></i>
                     <span>商品</span>
                 </a>
             </li>

@@ -28,6 +28,7 @@ urlpatterns += patterns('scraper.views',
     url(r'^scraper/crawl/$', 'crawl'),
     url(r'^scraper/category/$', 'category'),
     url(r'^scraper/download/$', 'get_excel'),
+    url(r'^scraper/monitor/$', 'monitor'),
 )
 
 

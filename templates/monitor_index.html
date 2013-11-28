@@ -1,0 +1,54 @@
+{% include "component/header.html" %}
+
+	<!-- this page specific styles -->
+	<link href="/js/jquery/jquery.dataTables.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+{% include "component/nav.html" %}
+{% include "component/sidebar.html" %}
+
+	<!-- main content -->
+    <div class="content">
+
+        <div id="pad-wrapper" >
+
+        	<!-- Nav tabs -->
+			<ul class="nav nav-tabs">
+				<li><a href="#top-selling" data-toggle="tab">爆款监控</a></li>
+			</ul>
+
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<div class="tab-pane active" id="top-selling">
+					<div id="monitor-template-panel" class="panel panel-primary">
+			        	<div class="panel-heading">监控模板</div>
+						<div class="panel-body">
+							<div class="alert alert-warning alert-dismissable">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+								<p><strong>注意! </strong></p>
+								<button id="monitor-template-download" type="button" class="btn btn-warning">下载模板</button>
+							</div>
+							<input type="file" id="monitor-template" name="monitor-template" />
+							<button id="monitor-template-submit" type="button" class="btn btn-primary">提交模板</button>
+						</div>
+			        </div>
+
+				</div>
+
+				<form action="/scraper/monitor/" method="POST" enctype='multipart/form-data'>
+					<input type="file" name="abc" />
+					<input type="submit" />
+				</form>
+			</div>
+
+        </div>
+    </div>
+    <!-- end main content -->
+
+{% include "component/footer.html" %}
+	<!-- this page specific javascripts -->
+	<script type="text/javascript" src="/js/jquery/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="/js/monitor.js"></script>
+</body>
+</html>

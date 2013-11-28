@@ -81,6 +81,9 @@ class TMSpider(CrawlSpider):
         try:
             # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
             TShop_str = sel.re('TShop\.Setup\(((.|\n)+?)\);')[0]
+            # 移除注释，目前只有天猫超市有注释，以逗号开头
+            regex = re.compile(',\s*\/\/[^\n]*')
+            TShop_str = re.sub(regex, ',', TShop_str)
             TShop = eval( TShop_str, type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )      
         except SyntaxError:
             return  

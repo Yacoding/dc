@@ -23,7 +23,9 @@ class ScrapyStarter( object ):
 
 	def create(self, spider_name, action_type="DEF_CALL", start_urls=[]):
 
-		if spider_name.upper() not in ['TM', 'JD', 'TM_CAT']:
+		print spider_name.upper()
+
+		if spider_name.upper() not in ['TM', 'JD', 'TM_CAT', 'MONITORSPIDER']:
 			print '[Console]: No spider.'
 			return
 
@@ -37,7 +39,7 @@ class ScrapyStarter( object ):
 			self.command += " -a export_file_name=" + self.export_file_name
 
 		if len(start_urls) > 0:
-			self.command += " -a start_urls=" + self.init_start_url(start_urls)	
+			self.command += " -a start_urls=" + self.init_start_url( action_type, start_urls )	
 
 
 	def run(self):
@@ -46,12 +48,25 @@ class ScrapyStarter( object ):
 		os.system( self.command )
 
 
-	def init_start_url(self, start_urls):
+	def init_start_url(self, action_type, start_urls):
 
 		result = ''
 
-		for i in start_urls:
-			result += '####' + quote(i[0].encode()) + '____' + i[1]
+		if action_type in ['BUSINESS_CALL', 'DEF_CALL']:
+			for i in start_urls:
+				result += '####' + quote(i[0].encode()) + '____' + i[1]
+
+		elif action_type in ['MONITOR_CALL']:
+			for arr in start_urls:
+				result += '####'
+				ilen = len(arr) - 1
+				for i in arr:
+					if i == 0:
+						result += arr[i] + '++++'
+					elif i == ilen:
+						result += arr[i]
+					else:
+						result += arr[i] + '____'
 
 		return result
 
