@@ -17,7 +17,7 @@ sys.setdefaultencoding('utf8')
 
 class MonitorSpider(BaseSpider):
 
-	name = "MonitorSpider"
+	name = "monitorspider"
 	allowed_domains = [ "tmall.com", "taobao.com",
 						"jd.com", "3.cn",
 						"feifei.com" ]
@@ -31,28 +31,28 @@ class MonitorSpider(BaseSpider):
 
 	def __init__(self, *args, **kwargs):
 
-        super(TMSpider, self).__init__(*args, **kwargs)
+		super(MonitorSpider, self).__init__(*args, **kwargs)
 
-        self.action_type = kwargs.get('action_type', 'MONITOR_CALL')
+		self.action_type = kwargs.get('action_type', 'MONITOR_CALL')
 
-        if kwargs.get('start_urls'):
-            self.start_urls = self.explain_urls( kwargs.get('start_urls') )
-            # self.start_urls = [ kwargs.get('start_urls') ]
-            print self.start_urls
+		if kwargs.get('start_urls'):
+		    self.start_urls = self.explain_urls( kwargs.get('start_urls') )
+		    # self.start_urls = [ kwargs.get('start_urls') ]
+		    print self.start_urls
 
 
-    def explain_urls(self, text):
-        # remove header '####'
-        text = text[4:]
-        rto = []
-        for group in text.split('####'):
-            main = group.split('++++')
-            rto.append( main[0] )
-            for t in main[1]:
-            	sub_url = t.split('____')
-            	for i in sub_url:
-            		rto.append( i )
-        return rto
+	def explain_urls(self, text):
+		# remove header '####'
+		text = text[4:]
+		rto = []
+		for group in text.split('####'):
+		    main = group.split('++++')
+		    rto.append( main[0] )
+		    for t in main[1]:
+		    	sub_url = t.split('____')
+		    	for i in sub_url:
+		    		rto.append( i )
+		return rto
 
 
 	def parse(self, response):

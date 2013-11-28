@@ -62,11 +62,11 @@ class ScrapyStarter( object ):
 				ilen = len(arr) - 1
 				for i in arr:
 					if i == 0:
-						result += arr[i] + '++++'
+						result += i + '++++'
 					elif i == ilen:
-						result += arr[i]
+						result += i
 					else:
-						result += arr[i] + '____'
+						result += i + '____'
 
 		return result
 
