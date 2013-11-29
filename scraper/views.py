@@ -12,6 +12,7 @@ import xlrd
 from datetime import datetime
 
 from scraper.ScrapyStarter import ScrapyStarter
+from scraper.CrawlerStarter import CrawlerStarter
 
 
 def scraper_index(request):
@@ -157,11 +158,15 @@ def monitor(request):
 		# handle  template file
 		start_urls = explainTemplate( xls_name )
 
-		scrapy = ScrapyStarter()
-		scrapy.create( 'MonitorSpider', action_type='MONITOR_CALL', start_urls=start_urls )
-		scrapy.run()
+		crawler = CrawlerStarter( 'MonitorSpider', start_urls=start_urls )
+		crawler.start()
 
-		return HttpResponse( to_json({ 'status': 'fail', 'err': 'unknow action' }) )
+		# with open('test.json', 'rb') as f:
+		# 	rto = f.read()
+
+		# return HttpResponse( to_json({ 'status': 'success', 'content': json.loads(rto) }) )
+
+		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
 
 
 def explainTemplate( xls_name ):
@@ -172,3 +177,13 @@ def explainTemplate( xls_name ):
 		data.append( table.row_values(i) )
 	os.remove( xls_name )
 	return data
+
+
+# def explainTemplate( xls_name ):
+# 	wb = xlrd.open_workbook( xls_name )
+# 	table = wb.sheet_by_index(0)
+# 	data = []
+# 	for i in range(table.nrows):
+# 		data.append( table.row_values(i) )
+# 	os.remove( xls_name )
+# 	return data

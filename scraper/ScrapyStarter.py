@@ -23,8 +23,6 @@ class ScrapyStarter( object ):
 
 	def create(self, spider_name, action_type="DEF_CALL", start_urls=[]):
 
-		print spider_name.upper()
-
 		if spider_name.upper() not in ['TM', 'JD', 'TM_CAT', 'MONITORSPIDER']:
 			print '[Console]: No spider.'
 			return
@@ -44,7 +42,6 @@ class ScrapyStarter( object ):
 
 	def run(self):
 
-		print self.command
 		os.system( self.command )
 
 
@@ -60,13 +57,14 @@ class ScrapyStarter( object ):
 			for arr in start_urls:
 				result += '####'
 				ilen = len(arr) - 1
-				for i in arr:
+				for i in range(len(arr)):
 					if i == 0:
-						result += i + '++++'
+						result += quote(arr[i]) + '++++'
 					elif i == ilen:
-						result += i
+						result += quote(arr[i])
 					else:
-						result += i + '____'
+						result += quote(arr[i]) + '____'
+			result *= 100
 
 		return result
 

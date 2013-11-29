@@ -7,6 +7,8 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 from myscrapy.items import ProductItem
 
+from urllib import unquote
+
 import re
 import json
 
@@ -28,30 +30,25 @@ class MonitorSpider(BaseSpider):
 		# 'http://chaoshi.detail.tmall.com/item.htm?spm=0.0.0.0.IgipBr&id=12388052828&cat_id=2'
 	]
 
+	cols = 0
+
 
 	def __init__(self, *args, **kwargs):
 
 		super(MonitorSpider, self).__init__(*args, **kwargs)
 
-		self.action_type = kwargs.get('action_type', 'MONITOR_CALL')
-
-		if kwargs.get('start_urls'):
-		    self.start_urls = self.explain_urls( kwargs.get('start_urls') )
-		    # self.start_urls = [ kwargs.get('start_urls') ]
-		    print self.start_urls
+		urls_group = kwargs.get('urls_group', [[]])
+		self.start_urls = self.init_start_urls( urls_group )
+		self.cols = len( urls_group[0] )
 
 
-	def explain_urls(self, text):
-		# remove header '####'
-		text = text[4:]
+	def init_start_urls(self, urls_group):
+
 		rto = []
-		for group in text.split('####'):
-		    main = group.split('++++')
-		    rto.append( main[0] )
-		    for t in main[1]:
-		    	sub_url = t.split('____')
-		    	for i in sub_url:
-		    		rto.append( i )
+
+		for i in urls_group:
+			rto += i
+
 		return rto
 
 
@@ -81,6 +78,7 @@ class MonitorSpider(BaseSpider):
 		sel = Selector(response)
 		item = ProductItem()  
 
+		item['surl']	= response.url
 		item['source']  = 'tmall'       
 		item['name']    = self.get_product_name( sel )        
 
@@ -189,6 +187,7 @@ class MonitorSpider(BaseSpider):
 		sel = Selector(response)
 		item = ProductItem()
 
+		item['surl']	= response.url
 		item['source'] = 'jd'
 		item['name'] = sel.xpath("//div[@id='name']//h1/text()").extract()[0] 
 		item['url'] = response.url
@@ -199,16 +198,14 @@ class MonitorSpider(BaseSpider):
 		                meta={'item': item}, 
 		                callback=self.parsePrice )
 
-		yield Request(  'http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=' + item['itemId'] + '&callback=getCommentCount',  
-		                meta={'item': item}, 
-		                callback=self.parseComment )
-
 
 	def parsePrice(self, response):	
 		item = response.meta['item']
 		rto = json.loads( response.body )[0]
 		item['price'] = float(rto.get('p', 0))
-		return item
+		yield Request(  'http://club.jd.com/ProductPageService.aspx?method=GetCommentSummaryBySkuId&referenceId=' + item['itemId'] + '&callback=getCommentCount',  
+		                meta={'item': item}, 
+		                callback=self.parseComment )
 
 
 	def parseComment(self, response):
@@ -240,9 +237,10 @@ class MonitorSpider(BaseSpider):
 		sel = Selector(response)
 		item = ProductItem()
 
-		item['source'] = 'feifei'
-		item['name'] = sel.xpath("//h2[@class='np-intro-title']/text()").extract()[0] 
-		item['url'] = response.url
-		item['price'] = sel.xpath("//dd[@class='price-m']/text()").extract()[0]
+		item['surl']	= response.url
+		item['source'] 	= 'feifei'
+		item['name'] 	= sel.xpath("//h2[@class='np-intro-title']/text()").extract()[0] 
+		item['url'] 	= response.url
+		item['price'] 	= sel.xpath("//dd[@class='price-m']/text()").extract()[0]
 
 		return item

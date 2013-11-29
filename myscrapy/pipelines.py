@@ -5,7 +5,14 @@ import sys
 import pymongo
 from datetime import datetime
 from myscrapy.export import ExportExcelEveryItem
+from scrapy.contrib.exporter import JsonItemExporter, JsonLinesItemExporter
 
+
+class PrintPipeline(object):
+
+	def process_item(self, item, spider):
+		return item
+		
 
 
 class TutorialPipeline(object):
@@ -29,6 +36,70 @@ class MongoPipeline(object):
 	def process_item(self, item, spider):
 		self.conn['test']['tm'].save(dict(item))
 		return item
+
+
+class JsonItemPipeline(object):
+
+	def open_spider(self, spider):
+		self.file = open('test.json', 'w+b')
+		self.exporter = JsonItemExporter(self.file)
+		self.exporter.start_exporting()
+
+	def close_spider(self, spider):
+		self.exporter.finish_exporting()
+		self.file.close()
+
+	def process_item(self, item, spider):
+		self.exporter.export_item(item)
+		return item	
+
+
+class JsonLinesItemPipeline(object):
+
+	def open_spider(self, spider):
+		self.file = open('test.json', 'w+b')
+		self.exporter = JsonLinesItemExporter(self.file)
+
+	def close_spider(self, spider):
+		self.file.close()
+
+	def process_item(self, item, spider):
+		self.exporter.export_item(item)
+		return item
+
+
+class MonitorPipeline(object):
+
+	def open_spider(self, spider):
+		self.cols = spider.cols
+		self.start_urls = spider.start_urls
+
+		self.file = open('test.json', 'w+b')
+		self.exporter = JsonItemExporter(self.file)
+		self.exporter.start_exporting()
+
+	def close_spider(self, spider):
+		self.exporter.finish_exporting()
+		self.file.close()
+
+	def process_item(self, item, spider):
+
+		try:
+			index = self.start_urls.index( item['surl'] )
+			groupId = index / self.cols
+			r = index % self.cols
+			if r == 0:
+				item['main'] = 0
+			elif r == 1:
+				item['main'] = 1
+			elif r == 2:
+				item['main'] = 2
+			item['gid'] = groupId
+		except:
+			index = -1
+
+		self.exporter.export_item(item)
+		return item		
 
 
 class ExcelPipeline(object):
