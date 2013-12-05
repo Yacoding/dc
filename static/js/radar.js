@@ -201,7 +201,19 @@ $(function(){
 			window.ptable = $('#products').dataTable({
                 "sPaginationType": "full_numbers",
                 "aLengthMenu": [10, 25, 50],
-                "iDisplayLength": 50
+                "iDisplayLength": 50,
+                "oLanguage": {
+                	"sSearch":"在结果中搜索：" ,
+                	"sLengthMenu": "每页显示 _MENU_ 条记录",
+                	"sInfo": "当前显示 _START_ 到 _END_ 条记录，共 _TOTAL_ 条记录",
+                	"sZeroRecords": "对不起，查询不到相关数据！",
+                	"oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上一页",
+                        "sNext": "下一页",
+                        "sLast": "末页"
+                    }
+                } 
             });
 		};
 

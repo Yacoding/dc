@@ -12,11 +12,13 @@ import xlrd
 from datetime import datetime
 
 from scraper.ScrapyStarter import ScrapyStarter
-from scraper.CrawlerStarter import CrawlerStarter
+
+
+conn = pymongo.Connection('127.0.0.1', 27017)
 
 
 def scraper_index(request):
-	META_TITLE = "网页爬虫"
+	META_TITLE = "数据中心 - 网页爬虫"
 	MODULE = "scraper"
 	return render_to_response('scraper_index.html', locals())
 
@@ -139,12 +141,14 @@ def get_excel(request):
 	return response
 
 
-
 def monitor(request):
 
 	if request.method == "GET":
-		META_TITLE = "商品雷达"
+		META_TITLE = "数据中心 - 价格监控"
 		MODULE = "monitor"
+
+		price_list = list( conn['monitor']['result'].find() )
+
 		return render_to_response('monitor_index.html', locals())
 
 	elif request.method == "POST":
@@ -156,34 +160,71 @@ def monitor(request):
 		with open( xls_name, 'wb+' ) as xls:
 			xls.write( template.read() )
 		# handle  template file
-		start_urls = explainTemplate( xls_name )
-
-		crawler = CrawlerStarter( 'MonitorSpider', start_urls=start_urls )
-		crawler.start()
-
-		# with open('test.json', 'rb') as f:
-		# 	rto = f.read()
-
-		# return HttpResponse( to_json({ 'status': 'success', 'content': json.loads(rto) }) )
+		tasks = _explainTemplate( xls_name )
+		_saveToMongo( tasks )
 
 		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
 
 
-def explainTemplate( xls_name ):
+def _explainTemplate( xls_name ):
+
 	wb = xlrd.open_workbook( xls_name )
 	table = wb.sheet_by_index(0)
-	data = []
-	for i in range(table.nrows):
-		data.append( table.row_values(i) )
+
+	tasks = []
+	date = datetime.now().strftime('%Y-%m-%d')
+
+	for i in range(1, table.nrows):
+
+		sku = table.cell(i, 0).value
+
+		if not sku:
+			continue
+
+		item = {
+			'sku' : sku,
+			'date' : date,
+			'state' : 1,
+			'urls' : []
+		}
+
+		tm_url = table.cell(i, 1).value
+		regex = re.compile('[\?&]id=(\d+)')
+		result = regex.search( tm_url )
+		if result:
+			item['urls'].append( 'http://detail.tmall.com/item.htm?id=%s' % result.group(1) )
+
+		for j in range(2, table.ncols):
+			item['urls'].append( table.cell(i, j).value )
+
+		item['urls'].append( "http://item.feifei.com/%s.html" % sku )
+
+		tasks.append( item )
+
 	os.remove( xls_name )
-	return data
+
+	return tasks
 
 
-# def explainTemplate( xls_name ):
-# 	wb = xlrd.open_workbook( xls_name )
-# 	table = wb.sheet_by_index(0)
-# 	data = []
-# 	for i in range(table.nrows):
-# 		data.append( table.row_values(i) )
-# 	os.remove( xls_name )
-# 	return data
+def _saveToMongo( tasks ):
+
+	coll = conn['monitor']['tasks']
+
+	for task in tasks:
+
+		if coll.find_one( {'sku': task['sku']} ):
+			coll.remove( {'sku': task['sku']} );
+
+		coll.insert( task )
+
+	
+def monitor_template( request ):
+
+	file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download', 'monitor_template.xlsx' )
+
+	with open(file_path, "rb") as excel_file:
+		file_content = excel_file.read()
+
+	response = HttpResponse( file_content, "application/vnd.ms-excel" )
+	response['Content-Disposition'] = 'attachment; filename=monitor_template.xlsx'
+	return response

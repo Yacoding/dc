@@ -2,6 +2,13 @@
 
 	<!-- this page specific styles -->
 	<link href="/js/jquery/jquery.dataTables.css" type="text/css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/css/jquery.fileupload.css">
+	<style type="text/css">
+		.highlight {
+			font-weight: bolder;
+			color: red;
+		}
+	</style>
 </head>
 <body>
 
@@ -15,47 +22,64 @@
 
         	<!-- Nav tabs -->
 			<ul class="nav nav-tabs">
-				<li><a href="#top-selling" data-toggle="tab">爆款监控</a></li>
+				<li class="active"><a href="#top-selling" data-toggle="tab">爆款监控</a></li>
 			</ul>
 
 			<!-- Tab panes -->
 			<div class="tab-content">
+
 				<div class="tab-pane active" id="top-selling">
-					<div id="monitor-template-panel" class="panel panel-primary">
-			        	<div class="panel-heading">监控模板</div>
-						<div class="panel-body">
-							<div class="alert alert-warning alert-dismissable">
-								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-								<p><strong>注意! </strong></p>
-								<button id="monitor-template-download" type="button" class="btn btn-warning">下载模板</button>
-							</div>
-							<input type="file" id="monitor-template" name="monitor-template" />
-							<button id="monitor-template-submit" type="button" class="btn btn-primary">提交模板</button>
+					<div class="alert alert-info alert-dismissable">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+							<p><strong>注意! </strong></p>
+							<p>1. 使用方法：先选择Excel文件，然后点击“提交文件”</p>			
+							<p>2. 监控后端程序每半小时执行一次，更新价格</p>
+							<p>3. 输出商品名便于对应关系，比价前辨识商品是否具有对应关系</p>
+							<p>4. 如需要添加监控任务，请先添加监控任务，点击右侧“下载模板”</p>
+							<p>
+								<span class="btn btn-success fileinput-button">
+        							<i class="glyphicon glyphicon-plus"></i>
+        							<span>选择文件</span>
+        							<input id="monitor-template" type="file" name="monitor-template">
+    							</span>
+								<button id="monitor-template-submit" class="btn btn-info"><i class="glyphicon glyphicon-circle-arrow-up"></i> 提交文件</button>
+								<button id="template-download-btn" class="btn btn-warning pull-right" type="submit"><i class="glyphicon glyphicon-circle-arrow-down"></i> 下载模板</button>
+								<form id="template-download-form" action="/scraper/monitor/template/" method="GET" ></form>	
+							</p>
 						</div>
-			        </div>
+					<div id="product-parent" >
+						<table cellpadding="0" cellspacing="0" border="0" class="" id="price_list">
+		                    <thead>
+		                        <tr role="row">
+									<th>SKU</th>
+									<th width="200">目录</th>
+									<th width="200">飞飞商品名</th>
+									<th>飞飞价</th>
+									<th width="200">天猫价</th>
+									<th width="200">京东价</th>
+									<th>更新时间</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    {% for item in price_list %}
+							    <tr>
+							    	<td>{{ item.sku }}</td>
+							    	<td>{{ item.category }}</td>
+							    	<td><a href="{{ item.priceList.feifei.url }}" target="_blank">{{ item.priceList.feifei.name }}</a></td>
+							    	<td>{{ item.priceList.feifei.price }}</td>
+							    	<td>{{ item.priceList.tmall.price }}<br /><a href="{{ item.priceList.tmall.url }}" target="_blank">{{ item.priceList.tmall.name }}</a></td>
+							    	<td>{{ item.priceList.jd.price }}<br/><a href="{{ item.priceList.jd.url }}" target="_blank">{{ item.priceList.jd.name }}</a></td>
+							    	<td>{{ item.date }}</td>
+							    </tr>
+							{% endfor %}
+		                    </tbody>
+		                </table>
+					</div>
 				</div>
+
 			</div>
 
-			<div id="product-parent" >
-				<table cellpadding="0" cellspacing="0" border="0" class="" id="products">
-                    <thead>
-                        <tr role="row">
-                            <th>缩略图</th>
-							<th>飞飞商品名</th>
-							<th>飞飞价</th>
-							<th>天猫商品名</th>
-							<th>天猫价</th>
-							<th>京东商品名</th>
-							<th>京东价</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-			</div>
 
-        </div>
-    </div>
     <!-- end main content -->
 
 {% include "component/footer.html" %}
@@ -65,10 +89,22 @@
 	<script src="/js/jquery/jquery.dataTables.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            window.ptable = $('#products').dataTable({
+            window.ptable = $('#price_list').dataTable({
                 "sPaginationType": "full_numbers",
                 "aLengthMenu": [100, 50, 25],
-                "iDisplayLength": 100
+                "iDisplayLength": 100,
+                "oLanguage": {
+                	"sSearch":"在结果中搜索：" ,
+                	"sLengthMenu": "每页显示 _MENU_ 条记录",
+                	"sInfo": "当前显示 _START_ 到 _END_ 条记录，共 _TOTAL_ 条记录",
+                	"sZeroRecords": "对不起，查询不到相关数据！",
+                	"oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上一页",
+                        "sNext": "下一页",
+                        "sLast": "末页"
+                    }
+                }               
             });
         });
     </script>

@@ -21,10 +21,6 @@ class ProductItem(Item):
     tm_moonSellCount = Field()
     date		= Field()
     history		= Field()
-    # for monitor spider
-    surl        = Field()
-    gid         = Field()
-    main        = Field()
 
 
 class TmCatItem(Item):
