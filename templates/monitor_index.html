@@ -63,7 +63,11 @@
 		                    <tbody>
 		                    {% for item in price_list %}
 							    <tr>
+							    {% if item.extraList %}
+							    	<td><a href="/scraper/monitor/sku/{{item.sku}}" target="_blank">{{ item.sku }}</a></td>
+							    {% else %}
 							    	<td>{{ item.sku }}</td>
+							    {% endif %}
 							    	<td>{{ item.category }}</td>
 							    	<td><a href="{{ item.priceList.feifei.url }}" target="_blank">{{ item.priceList.feifei.name }}</a></td>
 							    	<td>{{ item.priceList.feifei.price }}</td>

@@ -28,7 +28,7 @@ $(document).ready(function() {
 	$(document).on('click', '#monitor-template-submit', function() {
 
 		$.ajaxFileUpload({
-			url : '/scraper/monitor/',
+			url : '/scraper/monitor/template/',
 			type: "post",
 			secureuri:false,
 			fileElementId:'monitor-template',

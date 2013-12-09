@@ -1,0 +1,85 @@
+{% include "component/header.html" %}
+
+	<!-- this page specific styles -->
+	<link href="/js/jquery/jquery.dataTables.css" type="text/css" rel="stylesheet">
+	<style type="text/css">
+		.highlight {
+			font-weight: bolder;
+			color: red;
+		}
+	</style>
+</head>
+<body>
+
+{% include "component/nav.html" %}
+{% include "component/sidebar.html" %}
+
+	<!-- main content -->
+    <div class="content">
+
+        <div id="pad-wrapper" >
+			<div class="alert alert-info alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<p><strong class="highlight">{{ item.sku }}</strong> 追踪列表</p>
+				<p><a href="{{item.priceList.feifei.url}}" target="_blank">{{ item.priceList.feifei.name }}</a></p>
+				<p>飞飞价：<strong class="highlight">{{item.priceList.feifei.price}}</strong></p>
+			</div>
+			<div class="tab-pane active">
+				<div id="product-parent" >
+					<table cellpadding="0" cellspacing="0" border="0" class="" id="extra_list">
+	                    <thead>
+	                        <tr role="row">
+								<th width="100">来源</th>
+								<th width="200">商品名</th>
+								<th width="100">天猫价</th>
+								<th width="100">月销量</th>
+								<th width="200">店铺</th>								
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    {% for extra in extraList %}
+	                    	<tr>
+	                    		<td>天猫</td>
+	                    		<td><a href="{{extra.url}}" target="_blank">{{ extra.name }}</a></td>
+	                    		<td>{{ extra.price }}</td>
+	                    		<td>{{ extra.tm_moonSellCount }}</td>
+	                    		<td>{{ extra.tm_store }}</td>
+	                    	</tr>
+	                    {% endfor %}
+	                    </tbody>
+	                </table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+    <!-- end main content -->
+
+{% include "component/footer.html" %}
+	<!-- this page specific javascripts -->
+	<script src="/js/jquery/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            window.ptable = $('#extra_list').dataTable({
+                "sPaginationType": "full_numbers",
+                "aLengthMenu": [100, 50, 25],
+                "iDisplayLength": 100,
+                "oLanguage": {
+                	"sSearch":"在结果中搜索：" ,
+                	"sLengthMenu": "每页显示 _MENU_ 条记录",
+                	"sInfo": "当前显示 _START_ 到 _END_ 条记录，共 _TOTAL_ 条记录",
+                	"sZeroRecords": "对不起，查询不到相关数据！",
+                	"oPaginate": {
+                        "sFirst": "首页",
+                        "sPrevious": "上一页",
+                        "sNext": "下一页",
+                        "sLast": "末页"
+                    }
+                }               
+            });
+        });
+    </script>
+</body>
+</html>

@@ -151,20 +151,6 @@ def monitor(request):
 
 		return render_to_response('monitor_index.html', locals())
 
-	elif request.method == "POST":
-		template = request.FILES['monitor-template']
-		# save template file
-		now = datetime.now().strftime('%Y%m%d_%H-%M-%S')
-		UPLOAD_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'upload')
-		xls_name = os.path.join(UPLOAD_PATH, now+template.name)
-		with open( xls_name, 'wb+' ) as xls:
-			xls.write( template.read() )
-		# handle  template file
-		tasks = _explainTemplate( xls_name )
-		_saveToMongo( tasks )
-
-		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
-
 
 def _explainTemplate( xls_name ):
 
@@ -185,7 +171,8 @@ def _explainTemplate( xls_name ):
 			'sku' : sku,
 			'date' : date,
 			'state' : 1,
-			'urls' : []
+			'urls' : [],
+			'extras': []
 		}
 
 		tm_url = table.cell(i, 1).value
@@ -194,7 +181,19 @@ def _explainTemplate( xls_name ):
 		if result:
 			item['urls'].append( 'http://detail.tmall.com/item.htm?id=%s' % result.group(1) )
 
-		for j in range(2, table.ncols):
+		tm_q_url = table.cell(i, 2).value
+		if tm_q_url.find('list.tmall.com') > -1:
+			regex = re.compile('[\?&]q=([^&]+)')
+			result = regex.search( tm_q_url )
+			if result:
+				item['extras'].append( 'http://list.tmall.com/search_product.htm?q=%s' % result.group(1) )
+		elif tm_q_url.find('detail.tmall.com') > -1:
+			regex = re.compile('[\?&]id=(\d+)')
+			result = regex.search( tm_q_url )
+			if result:
+				item['extras'].append( 'http://detail.tmall.com/item.htm?id=%s' % result.group(1) )
+
+		for j in range(3, table.ncols):
 			item['urls'].append( table.cell(i, j).value )
 
 		item['urls'].append( "http://item.feifei.com/%s.html" % sku )
@@ -220,11 +219,39 @@ def _saveToMongo( tasks ):
 	
 def monitor_template( request ):
 
-	file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download', 'monitor_template.xlsx' )
+	if request.method == "GET":
 
-	with open(file_path, "rb") as excel_file:
-		file_content = excel_file.read()
+		file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'download', 'monitor_template.xlsx' )
 
-	response = HttpResponse( file_content, "application/vnd.ms-excel" )
-	response['Content-Disposition'] = 'attachment; filename=monitor_template.xlsx'
-	return response
+		with open(file_path, "rb") as excel_file:
+			file_content = excel_file.read()
+
+		response = HttpResponse( file_content, "application/vnd.ms-excel" )
+		response['Content-Disposition'] = 'attachment; filename=monitor_template.xlsx'
+		return response
+
+	elif request.method == "POST":
+		template = request.FILES['monitor-template']
+		# save template file
+		now = datetime.now().strftime('%Y%m%d_%H-%M-%S')
+		UPLOAD_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'upload')
+		xls_name = os.path.join(UPLOAD_PATH, now+template.name)
+		with open( xls_name, 'wb+' ) as xls:
+			xls.write( template.read() )
+		# handle  template file
+		tasks = _explainTemplate( xls_name )
+		_saveToMongo( tasks )
+
+		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
+
+
+def monitor_sku(request, sku):
+
+	META_TITLE = "数据中心 - 价格监控"
+	MODULE = "monitor"
+
+	item = conn['monitor']['result'].find_one({'sku':sku}, {'_id': False})
+
+	extraList = item.get('extraList', {}).values()
+
+	return render_to_response('monitor_item.html', locals())
