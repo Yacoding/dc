@@ -35,18 +35,24 @@ $(document).ready(function() {
 			dataType: 'json',
 			data: {},
 			success: function (data, status){
-				console.dir(data);
+				if(data.status === 'success') {
+					$('#uploadSuccessModal .modal-body').html('<p>上传任务成功</p><p>服务器将在30min内开始抓取任务</p>');
+					$('#uploadSuccessModal').modal();
+				}
+				else {
+					$('#uploadSuccessModal .modal-body').html('<p>上传任务错误</p>');
+					$('#uploadSuccessModal').modal();
+				}
 			},
-			error: function (data, status, e) {
-				alert(e);
-			}
+			error: function (data, status, e) { console.log(e); }
 		});
 
 	});
 
 
-	$(document).on('click', '#template-download-btn', function() {
+	$('#template-download-btn').click(function(){
 		$('#template-download-form').submit();
 	});
+
 	
 });

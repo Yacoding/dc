@@ -194,7 +194,8 @@ def _explainTemplate( xls_name ):
 				item['extras'].append( 'http://detail.tmall.com/item.htm?id=%s' % result.group(1) )
 
 		for j in range(3, table.ncols):
-			item['urls'].append( table.cell(i, j).value )
+			if table.cell(i, j).value:
+				item['urls'].append( table.cell(i, j).value )
 
 		item['urls'].append( "http://item.feifei.com/%s.html" % sku )
 
@@ -212,7 +213,7 @@ def _saveToMongo( tasks ):
 	for task in tasks:
 
 		if coll.find_one( {'sku': task['sku']} ):
-			coll.remove( {'sku': task['sku']} );
+			coll.remove( {'sku': task['sku']} )
 
 		coll.insert( task )
 
@@ -231,7 +232,10 @@ def monitor_template( request ):
 		return response
 
 	elif request.method == "POST":
-		template = request.FILES['monitor-template']
+		try:
+			template = request.FILES['monitor-template']
+		except:
+			return HttpResponse( to_json({ 'status': 'fail' }) )
 		# save template file
 		now = datetime.now().strftime('%Y%m%d_%H-%M-%S')
 		UPLOAD_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'upload')
@@ -242,7 +246,7 @@ def monitor_template( request ):
 		tasks = _explainTemplate( xls_name )
 		_saveToMongo( tasks )
 
-		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
+		return HttpResponse( to_json({ 'status': 'success' }) )
 
 
 def monitor_sku(request, sku):

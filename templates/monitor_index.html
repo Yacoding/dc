@@ -64,15 +64,15 @@
 		                    {% for item in price_list %}
 							    <tr>
 							    {% if item.extraList %}
-							    	<td><a href="/scraper/monitor/sku/{{item.sku}}" target="_blank">{{ item.sku }}</a></td>
+							    	<td><a href="/scraper/monitor/sku/{{item.sku}}" title="追踪列表" target="_blank">{{ item.sku }}</a></td>
 							    {% else %}
 							    	<td>{{ item.sku }}</td>
 							    {% endif %}
 							    	<td>{{ item.category }}</td>
-							    	<td><a href="{{ item.priceList.feifei.url }}" target="_blank">{{ item.priceList.feifei.name }}</a></td>
+							    	<td><a href="{{ item.priceList.feifei.url }}" title="飞飞链接" target="_blank">{{ item.priceList.feifei.name }}</a></td>
 							    	<td>{{ item.priceList.feifei.price }}</td>
-							    	<td>{{ item.priceList.tmall.price }}<br /><a href="{{ item.priceList.tmall.url }}" target="_blank">{{ item.priceList.tmall.name }}</a></td>
-							    	<td>{{ item.priceList.jd.price }}<br/><a href="{{ item.priceList.jd.url }}" target="_blank">{{ item.priceList.jd.name }}</a></td>
+							    	<td>{{ item.priceList.tmall.price }}<br /><a href="{{ item.priceList.tmall.url }}" title="天猫链接" target="_blank">{{ item.priceList.tmall.name }}</a></td>
+							    	<td>{{ item.priceList.jd.price }}<br/><a href="{{ item.priceList.jd.url }}" title="京东链接" target="_blank">{{ item.priceList.jd.name }}</a></td>
 							    	<td>{{ item.date }}</td>
 							    </tr>
 							{% endfor %}
@@ -80,6 +80,22 @@
 		                </table>
 					</div>
 				</div>
+
+				<!-- Modal -->
+				<div class="modal fade" id="uploadSuccessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">提示</h4>
+							</div>
+							<div class="modal-body"></div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
 
 			</div>
 
