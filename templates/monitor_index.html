@@ -44,7 +44,7 @@
     							</span>
 								<button id="monitor-template-submit" class="btn btn-info"><i class="glyphicon glyphicon-circle-arrow-up"></i> 提交文件</button>
 								<button id="template-download-btn" class="btn btn-warning pull-right" type="submit"><i class="glyphicon glyphicon-circle-arrow-down"></i> 下载模板</button>
-								<form id="template-download-form" action="/scraper/monitor/template/" method="GET" ></form>	
+								<form id="template-download-form" action="/monitor/template/" method="GET" ></form>	
 							</p>
 						</div>
 					<div id="product-parent" >
@@ -57,6 +57,9 @@
 									<th>飞飞价</th>
 									<th width="200">天猫价</th>
 									<th width="200">京东价</th>
+									<th width="150">易迅价</th>
+									<th width="150">一号店</th>
+									<th width="150">亚马逊</th>
 									<th>更新时间</th>
 		                        </tr>
 		                    </thead>
@@ -64,7 +67,7 @@
 		                    {% for item in price_list %}
 							    <tr>
 							    {% if item.extraList %}
-							    	<td><a href="/scraper/monitor/sku/{{item.sku}}" title="追踪列表" target="_blank">{{ item.sku }}</a></td>
+							    	<td><a href="/monitor/sku/{{item.sku}}" title="追踪列表" target="_blank">{{ item.sku }}</a></td>
 							    {% else %}
 							    	<td>{{ item.sku }}</td>
 							    {% endif %}
@@ -73,6 +76,9 @@
 							    	<td>{{ item.priceList.feifei.price }}</td>
 							    	<td>{{ item.priceList.tmall.price }}<br /><a href="{{ item.priceList.tmall.url }}" title="天猫链接" target="_blank">{{ item.priceList.tmall.name }}</a></td>
 							    	<td>{{ item.priceList.jd.price }}<br/><a href="{{ item.priceList.jd.url }}" title="京东链接" target="_blank">{{ item.priceList.jd.name }}</a></td>
+							    	<td>{{ item.priceList.yixun.price }}<br/><a href="{{ item.priceList.yixun.url }}" title="易迅链接" target="_blank">{{ item.priceList.yixun.name }}</a></td>
+							    	<td>{{ item.priceList.yhd.price }}<br/><a href="{{ item.priceList.yhd.url }}" title="易迅链接" target="_blank">{{ item.priceList.yhd.name }}</a></td>
+							    	<td>{{ item.priceList.amazon.price }}<br/><a href="{{ item.priceList.amazon.url }}" title="易迅链接" target="_blank">{{ item.priceList.amazon.name }}</a></td>
 							    	<td>{{ item.date }}</td>
 							    </tr>
 							{% endfor %}

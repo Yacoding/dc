@@ -13,8 +13,11 @@ $(document).ready(function() {
 			var fp = parseFloat( itemNodes[i].children[3].innerText );
 			var tp = parseFloat( itemNodes[i].children[4].innerText.split('\n')[0] );
 			var jp = parseFloat( itemNodes[i].children[5].innerText.split('\n')[0] );
+			var yxp = parseFloat( itemNodes[i].children[6].innerText.split('\n')[0] );
+			var yhdp = parseFloat( itemNodes[i].children[7].innerText.split('\n')[0] );
+			var ap = parseFloat( itemNodes[i].children[8].innerText.split('\n')[0] );
 
-			if( fp > tp || fp > jp ) {
+			if( fp > tp || fp > jp || fp > yxp || fp > yhdp || fp > ap ) {
 				$(itemNodes[i]).addClass('highlight');
 			}
 
@@ -28,7 +31,7 @@ $(document).ready(function() {
 	$(document).on('click', '#monitor-template-submit', function() {
 
 		$.ajaxFileUpload({
-			url : '/scraper/monitor/template/',
+			url : '/monitor/template/',
 			type: "post",
 			secureuri:false,
 			fileElementId:'monitor-template',

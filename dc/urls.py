@@ -28,9 +28,13 @@ urlpatterns += patterns('scraper.views',
     url(r'^scraper/crawl/$', 'crawl'),
     url(r'^scraper/category/$', 'category'),
     url(r'^scraper/download/$', 'get_excel'),
-    url(r'^scraper/monitor/$', 'monitor'),
-    url(r'^scraper/monitor/sku/(?P<sku>\w+)', 'monitor_sku'),
-    url(r'^scraper/monitor/template/$', 'monitor_template'),
+)
+
+# monitor module's route configure
+urlpatterns += patterns('monitor.views',
+    url(r'^monitor/$', 'monitor'),
+    url(r'^monitor/sku/(?P<sku>\w+)', 'monitor_sku'),
+    url(r'^monitor/template/$', 'monitor_template'),
 )
 
 
@@ -41,14 +45,6 @@ urlpatterns += patterns('products.views',
     url(r'^radar/selectProducts$', 'select_products'),
     url(r'^radar/getCategory$', 'get_category'),
     url(r'^radar/test/$', 'test'),
-)
-
-
-# schedule module's route configure
-urlpatterns += patterns('schedule.views',
-    url(r'^schedule/$', 'schedule_index'),
-    url(r'^schedule/run$', 'run'),
-    url(r'^schedule/stop$', 'stop'),
 )
 
 
