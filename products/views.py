@@ -8,6 +8,7 @@ from products.main.OperationStrategy import OperationContext
 from products.models import Category
 
 import json
+from mongoengine import connect
 
 
 # def index(request):
@@ -20,20 +21,20 @@ def test(request):
 
 def radar_index(request):
 	"""Mian page of product radar"""
-	META_TITLE = "商品雷达"
+	META_TITLE = "数据中心 - 商品雷达"
 	MODULE = "radar"
 	return render_to_response('radar_index.html', locals())
 
 
 def radar_detail(request):
 	"""Detail page of product radar"""
-	META_TITLE = "商品雷达 - 商品详情"
+	META_TITLE = "数据中心 - 商品详情"
 	return render_to_response('radar_detail.html', locals())
 
 
 def get_category(request):
 	"""Get Tmall/JD category"""
-	params = _get_request_params( request )
+	# params = _get_request_params( request )
 	category = Category.objects.limit(1).all_fields().to_json()
 	return HttpResponse( _rto_unify( category, True ) )
 
