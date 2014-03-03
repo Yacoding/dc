@@ -80,11 +80,15 @@ class TMSpider(CrawlSpider):
         
         try:
             # 获取TShop字符串，并对TShop字符串进行JSON标准化处理
-            TShop_str = sel.re('TShop\.Setup\(((.|\n)+?)\);')[0]
+            # TShop_str = sel.re('TShop\.Setup\(((.|\n)+?)\);')[0]
+            body = response.body
+            regex = re.compile('TShop\.Setup\(((.|\n)+?)\);')
+            TShop_str = regex.search( body ).group(1)
             # 移除注释，目前只有天猫超市有注释，以逗号开头
             regex = re.compile(',\s*\/\/[^\n]*')
             TShop_str = re.sub(regex, ',', TShop_str)
-            TShop = eval( TShop_str, type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )      
+            # TShop = eval( TShop_str, type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() ) 
+            TShop = json.loads(TShop_str)      
         except SyntaxError:
             return  
         
@@ -127,8 +131,8 @@ class TMSpider(CrawlSpider):
         try:
             initObj = eval( response.body.strip().decode('gbk'), type('Dummy', (dict,), dict(__getitem__=lambda s,n:n))() )
             priceInfo = initObj.get('defaultModel').get('itemPriceResultDO').get('priceInfo')
-            for sku in skuMap.keys():
-                item['relateSKU'][skuMap[sku]] = priceInfo[sku]
+            # for sku in skuMap.keys():
+            #     item['relateSKU'][skuMap[sku]] = priceInfo[sku]
             item['price'] = self.get_default_price(priceInfo)
             item['tm_moonSellCount'] = initObj.get('defaultModel').get('sellCountDO').get('sellCount', 0)
         except:

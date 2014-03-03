@@ -22,7 +22,7 @@ ITEM_PIPELINES = [
 	# 'myscrapy.pipelines.JsonItemPipeline',
 ]
 
-# COOKIES_ENABLED = True
+COOKIES_ENABLED = True
 
 DOWNLOAD_DELAY = 0.01    # 10 ms of delay
 DOWNLOAD_TIMEOUT = 30

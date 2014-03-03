@@ -108,7 +108,6 @@ def get_excel(request):
 	response = HttpResponse( file_content, "application/vnd.ms-excel" )
 	response['Content-Disposition'] = 'attachment; filename=%s' % file_name
 	return response
-<<<<<<< HEAD
 
 
 
@@ -159,5 +158,3 @@ def explainTemplate( xls_name ):
 # 		data.append( table.row_values(i) )
 # 	os.remove( xls_name )
 # 	return data
-=======
->>>>>>> d66a896ee96be585160e74f5ea20928bcc189210
