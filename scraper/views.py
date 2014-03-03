@@ -161,12 +161,12 @@ def monitor(request):
 		crawler = CrawlerStarter( 'MonitorSpider', start_urls=start_urls )
 		crawler.start()
 
-		# with open('test.json', 'rb') as f:
-		# 	rto = f.read()
+		with open('test.json', 'rb') as f:
+			rto = f.read()
 
-		# return HttpResponse( to_json({ 'status': 'success', 'content': json.loads(rto) }) )
+		return HttpResponse( to_json({ 'status': 'success', 'content': json.loads(rto) }) )
 
-		return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
+		# return HttpResponse( to_json({ 'status': 'success', 'content': 'sth' }) )
 
 
 def explainTemplate( xls_name ):

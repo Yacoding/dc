@@ -15,9 +15,15 @@ class CrawlerStarter( object ):
 			self.spider = MonitorSpider( urls_group=start_urls )
 			settings = get_project_settings()
 			self.crawler = Crawler(settings)
-			self.crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
+			self.crawler.signals.connect(self.h, signal=signals.spider_closed)
 			self.crawler.configure()
 			self.crawler.crawl( self.spider )
+
+
+	def h(self):
+		print "i am h"
+		with open('test.txt', 'wb') as f:
+			f.write('i am finish')
 
 
 	def start(self):
@@ -25,4 +31,4 @@ class CrawlerStarter( object ):
 		self.crawler.start()
 		log.start()
 		# the script will block here until the spider_closed signal was sent
-		reactor.run() 
+		# reactor.run() 
