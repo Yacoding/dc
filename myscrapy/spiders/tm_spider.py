@@ -157,9 +157,9 @@ class TMSpider(CrawlSpider):
         """
         name_node = sel.xpath('//div[@id="J_DetailMeta"]//h3')
 
-        if len(name_node.xpath('./a')) > 0:
+        if name_node and len(name_node.xpath('./a')) > 0:
             return name_node.xpath('./a/text()').extract()[0]
-        elif len(name_node.xpath('./a')) == 0:
+        elif name_node and len(name_node.xpath('./a')) == 0:
             return name_node.xpath('./text()').extract()[0]
         else:
             return ''
